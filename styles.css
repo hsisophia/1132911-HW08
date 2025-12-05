@@ -1,0 +1,190 @@
+/* 設定變數與整體版面 - 水藍色系 */
+:root{
+    --bg: #f0f8f8;      /* 極淡的水藍灰 (背景) */
+    --surface: #ffffff; /* 介面元素表面色 (白色) */
+    --text: #334e68;    /* 柔和深藍灰 (文字，比純黑柔和) */
+    --x: #4dc0e1;       /* 水藍色 (Player X) */
+    --o: #ff6b6b;       /* 活力珊瑚紅 (Player O - Contrast) */
+    --button-main: #4dc0e1; /* 主要按鈕顏色 */
+    --win: #ffeb99;     /* 柔和米黃色 (勝利標記) */
+    --radius: 12px;     /* 全局圓角大小 */
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+}
+
+*, *::before, *::after {
+    box-sizing:border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+html,body{height:100%;}
+body{
+    margin:0; 
+    /* 使用引入的 Poppins 字體，更具現代感 */
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    background:var(--bg); 
+    color:var(--text); 
+    display:grid; 
+    place-items:center; 
+    padding:24px;
+
+    /* 視覺增強：微妙的背景紋理 */
+    background-image: radial-gradient(#d3e8e8 1px, transparent 0);
+    background-size: 20px 20px;
+}
+
+/* 隱藏元素但保留給讀屏軟體 */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* main 容器與標題 - 提升立體感和邊緣精緻度 */
+.container{ 
+    width: min(720px, 96%); 
+    text-align:center;
+    background-color: var(--surface);
+    padding: 30px; 
+    border-radius: calc(var(--radius) * 1.5); /* 容器圓角稍大 */
+    /* 專業陰影: 多層次陰影，輕盈且有質感 */
+    box-shadow: 0 15px 35px var(--shadow-light), 0 0 0 1px var(--shadow-light);
+}
+h1{ 
+    margin:0 0 20px 0; 
+    font-size:32px; /* 標題再次加大 */
+    font-weight: 700;
+}
+
+/* 狀態區 */
+.status{ 
+    margin-bottom: 25px;
+    font-size: 1.15em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.status strong {
+    font-size: 1.3em;
+    padding: 0 4px;
+    border-bottom: 3px solid; /* 底線加粗 */
+    transition: border-bottom-color 0.3s; /* 換手動畫 */
+}
+.status strong#turn:empty:not(.x):not(.o) { border-bottom-color: transparent; }
+.status strong.x { color: var(--x); border-bottom-color: var(--x); }
+.status strong.o { color: var(--o); border-bottom-color: var(--o); }
+#state { 
+    margin-left: 10px; 
+    font-weight: 700;
+    color: var(--o); /* 預設使用O色，遊戲結束時由JS決定顏色 */
+}
+
+
+/* 棋盤佈局 - 視覺提升 */
+.board{
+    display:grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap:10px; /* 間距略微縮小 */
+    background: linear-gradient(180deg, rgba(77, 192, 225, 0.15), rgba(77, 192, 225, 0.05));
+    padding: 10px; 
+    border-radius: var(--radius);
+    width:min(560px, 92%); 
+    aspect-ratio:1/1; 
+    box-shadow: inset 0 0 15px var(--shadow-light); /* 內陰影更明顯 */
+}
+
+/* 棋盤格 (button.cell) - 更精緻的陰影和過渡 */
+.cell{
+    border-radius: var(--radius); 
+    background: var(--surface); 
+    border: none;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    font-size:72px;
+    font-weight:900;
+    display:grid; 
+    place-items:center;
+    cursor:pointer; 
+    user-select:none; 
+    -webkit-tap-highlight-color:transparent;
+    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1); /* 使用更專業的 ease 曲線 */
+}
+.cell:hover:not(:disabled) { 
+    transform: translateY(-3px) scale(1.02); /* 懸停上浮感更強烈 */
+    box-shadow: 0 8px 18px var(--shadow-strong);
+}
+.cell.x{ color:var(--x); }
+.cell.o{ color:var(--o); }
+.cell.win{ 
+    background:var(--win); 
+    color: var(--text); /* 勝利文字使用深色 */
+    box-shadow: inset 0 0 10px var(--shadow-strong); 
+    transform: none;
+    /* 勝利動畫：棋子閃爍 */
+    animation: pulseWin 1s infinite alternate;
+}
+@keyframes pulseWin {
+    from { opacity: 0.8; }
+    to { opacity: 1; }
+}
+
+/* 計分板樣式 - 邊框更明顯 */
+.scoreboard{ 
+    margin-top:30px; 
+    margin-bottom: 10px;
+    text-align:center;
+    display:inline-block; 
+    padding: 15px 30px;
+    border-radius: var(--radius);
+    background: #f8fcfc;
+    border: 1px solid rgba(77, 192, 225, 0.3); /* 邊框加強 */
+    box-shadow: 0 2px 5px var(--shadow-light);
+}
+.scoreboard h2{ margin-bottom:10px; font-size:18px; font-weight: 600; }
+.scoreboard .scores {
+    display: flex;
+    gap: 20px;
+}
+.scoreboard p { 
+    margin: 4px 0; 
+    font-weight: 500;
+} 
+.scoreboard p span { font-weight: 700; color: var(--button-main); }
+.scoreboard p.score-x span { color: var(--x); }
+.scoreboard p.score-o span { color: var(--o); }
+
+
+/* 控制按鈕樣式 - 更具體積感和水藍色調 */
+.controls{ 
+    margin-top:25px;
+    display: flex;
+    gap: 15px; /* 間距略增 */
+    justify-content: center;
+}
+button{ 
+    padding:10px 18px; 
+    border-radius: var(--radius); 
+    border:0; 
+    background:var(--button-main); 
+    color:#ffffff;
+    cursor:pointer;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease-out; 
+    /* 按鈕陰影調整為水藍色 */
+    box-shadow: 0 4px 8px rgba(77, 192, 225, 0.4); 
+}
+button:hover:not(:disabled) { 
+    background: #36a5c9;
+    transform: translateY(-2px); /* 懸停時上浮感加強 */
+    box-shadow: 0 6px 12px rgba(77, 192, 225, 0.5);
+}
+button:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(77, 192, 225, 0.3);
+}
+button:disabled{ opacity:.4; cursor:not-allowed; box-shadow: none; }
